@@ -1,0 +1,5 @@
+<RCC>
+  <qresource prefix="newPrefix">
+    <file>../../../Downloads/pictures-icon-22.gif</file>
+  </qresource>
+</RCC>
