@@ -7,6 +7,7 @@ from RPLCD.i2c import CharLCD
 import time
 from threading import Thread
 from pyparticleio.ParticleCloud import ParticleCloud
+from PyQt5 import QtCore
 
 # Global variables
 global lcd_message
@@ -17,10 +18,8 @@ global detected
 detected = False
 global openParcel
 openParcel = False
-global ledChanged
-ledChanged = False
-global ledController
-ledController = "OFF"
+global LedOn
+LedOn = False
 global visitorButton
 visitorButton = False
 global deliveryButton
@@ -30,12 +29,10 @@ Guest = "---"
 global GuestResponse
 GuestResponse = "---"
 
-global publishEvent
-publishEvent = False
 global Temperature
 Temperature = 0.0
 global Humidity
-humidity = 0.0
+Humidity = 0.0
 global Humidifier_status
 Humidifier_status= "OFF"
 global AirCon_status 
@@ -49,26 +46,29 @@ particle_cloud = ParticleCloud(username_or_access_token=access_token, device_ids
 class lcd:
     def __init__(self):
         self.__running = True
-        self.lcd = CharLCD('PCF8570', 0x27)
+        self.lcd = CharLCD('PCF8574', 0x27)
         
     def run(self):
         global lcd_message
         global new_message
         while self.__running:
             if new_message:
-                lcd.clear()
-                lcd.write_string(lcd_message)
+                self.lcd.clear()
+                self.lcd.write_string(lcd_message)
+                new_message = False
+                time.sleep(1)
     
     def terminate(self):
         self.__running = False
 
 class ControlDevices:
     def __init__(self):
-        self._running = True
+        self.__running = True
         # Pins
         self.SERVO_PIN = 4
-        self.PIR_PIN = 12
-        self.LED_PIN = 1
+        self.ECHO = 24
+        self.TRIG = 23
+        self.LED_PIN = 5
         self.visitor_BUTTON_PIN = 6
         self.delivery_BUTTON_PIN = 13
         self.yes_BUTTON_PIN = 19
@@ -78,14 +78,16 @@ class ControlDevices:
         self.openDutyPWM = 10
         self.openParcelDuration = 5
         
-    
+        self.setup()
+        
     def setup(self):
         # Setup Servo Motor         
         IO.setup(self.SERVO_PIN, IO.OUT)
-        self.servo = IO.PWM(self.PIN, 50)
+        self.servo = IO.PWM(self.SERVO_PIN, 50)
         self.servo.start(self.closeDutyPWM)
-        # Setup Motion Sensor
-        IO.setup(self.PIR_PIN, IO.IN)
+        # Setup Ultra sonic sensor
+        IO.setup(self.TRIG, IO.OUT)
+        IO.setup(self.ECHO, IO.IN)
         # Setup LED light
         IO.setup(self.LED_PIN, IO.OUT)
         # Setup buttons
@@ -96,54 +98,92 @@ class ControlDevices:
         
         
     def terminate(self):  
-        self._running = False
+        self.__running = False
         
-    def GuestMessage(self, message);
+    def GuestMessage(self, message):
+        global new_message
+        global lcd_message
         new_message = True
         lcd_message = message
         
+    def Distance(self):
+        IO.output(self.TRIG, True)
+        time.sleep(0.00001)
+        IO.output(self.TRIG, False)
+        
+        startTime = time.time()
+        stopTime = time.time()
+        
+        while IO.input(self.ECHO) == 0:
+            startTime = time.time()
+        
+        while IO.input(self.ECHO) == 1:
+            stopTime = time.time()
+            
+        timeElapsed = stopTime - startTime
+        distance = timeElapsed*34300/2
+        
+        return distance
+
     def run(self):
         while self.__running:
             # Listening for Parcel box controlling
+            global openParcel
+            global ledChanged
+            global detected
+            global GuestResponse
+            global ledStatus
+            global visitorButton
+            global deliveryButton
+            global Guest
+            
             if openParcel:
                 openParcel = False
-                
+                self.GuestMessage("Parcel Box is opened Closing in " + str(self.openParcelDuration) + " seconds")
+                time.sleep(1)
                 self.servo.ChangeDutyCycle(self.openDutyPWM)
                 time.sleep(self.openParcelDuration)
                 self.servo.ChangeDutyCycle(self.closeDutyPWM)
-                self.GuestMessage("Parcel Box is opened Closing in " + str(openParcelDuration) + " seconds")
-            
+                time.sleep(1)
+
             # Listening for led controlling
-            if ledChanged:
-                if ledStatus == "OFF":
-                    IO.output(self.LED_PIN, IO.LOW)
-                elif ledStatus == "ON":
-                    IO.output(self.LED_PIN, IO.HIGH)
+            if LedOn:
+                IO.output(self.LED_PIN, IO.HIGH)
+            else:
+                IO.output(self.LED_PIN, IO.LOW)
                     
             # Detect motion
-            if IO.input(self.PIR_PIN):
+            d = self.Distance()
+            if d <= 10:
+                if detected == False:
+                    self.GuestMessage("Hi There, Welcome to Justin house! Please press buttons.")
                 detected = True
-                self.GuestMessage("Hi There, Welcome to Justin house! Please press buttons.")
             else:
                 detected = False
             
             if IO.input(self.visitor_BUTTON_PIN) == False:
-                time.sleep(0.5)
+                Guest = "Visitor"
                 visitorButton = True
                 deliveryButton = False
                 self.GuestMessage("Hi Visitor! Justin is notified! Please wait for Justin's response.")
-            elif IO.input(self.delivery_BUTTON_PIN) == False:
                 time.sleep(0.5)
+                
+            if IO.input(self.delivery_BUTTON_PIN) == False:
+                Guest = "Delivery"
                 visitorButton = False
                 deliveryButton = True
                 self.GuestMessage("Hi There, Please leave packages in the parcel box! Thank You")
+                time.sleep(2)
+                openParcel = True
+                time.sleep(0.5)
                 
             if IO.input(self.yes_BUTTON_PIN) == False:
-                time.sleep(0.5)
                 GuestResponse = "YES"
-            elif IO.input(self.no_BUTTON_PIN) == False:
                 time.sleep(0.5)
+                
+            if IO.input(self.no_BUTTON_PIN) == False:
                 GuestResponse = "NO"
+                time.sleep(0.5)
         
 class ArgonConnection:
     def __init__(self):
@@ -153,6 +193,13 @@ class ArgonConnection:
         self._running = False  
 
     def run(self):
+        global visitorButton
+        global deliveryButton
+        global Temperature
+        global Humidity
+        global Humidifier_status
+        global AirCon_status
+        
         while self._running:
             # Get data from room sensors
             Temperature = round(particle_cloud.JustinArgon01.Temperature, 1)
@@ -169,11 +216,11 @@ class ArgonConnection:
             
             # Get Air Conditioner Status
             if (AirConditioner == -1):
-                AirConditioner_status = "COOLING"
+                AirCon_status = "COOLING"
             elif (AirConditioner == 0):
-                AirConditioner_status = "OFF"
+                AirCon_status = "OFF"
             elif (AirConditioner == 1):
-                AirConditioner_status = "HEATING"
+                AirCon_status = "HEATING"
             
             if visitorButton == True and deliveryButton == False:
                 particle_cloud.JustinArgon01.publish("Guess_Notifications", "visitor")
@@ -185,6 +232,8 @@ class ArgonConnection:
                 # Reset state after pulished event
                 visitorButton = False
                 deliveryButton = False
+            
+            time.sleep(1)
             
 class UI(QMainWindow):
     def __init__(self):
@@ -216,7 +265,7 @@ class UI(QMainWindow):
         self.guestStatus = self.findChild(QLabel, 'labelGuessStatus')
         self.guessReply = self.findChild(QLabel, 'labelReply')
         self.airConStatus = self.findChild(QLabel, 'labelAirConStatus')
-        self.humidifierStatus = self.findChild(QLabel, 'labelHumidifierStatus')
+        self.humidifierStatus = self.findChild(QLabel, 'labelHumidifierSatus')
         
         # Find RadioButtons
         # Door Light buttons        
@@ -247,10 +296,14 @@ class UI(QMainWindow):
     
     # Function: Door Light Controller    
     def doorLightOnClicked(self, rbDoorLight):
+        global LedOn
         if rbDoorLight.isChecked():
-            ledChanged = True
             self.lightStatus.setText(rbDoorLight.text())
-            
+            if (rbDoorLight.text() == "ON"):
+                LedOn = True
+            else:
+                LedOn = False
+                
     # Function: Air Conditioner Controller    
     def airConOnClicked(self, rbAirCon):
         if rbAirCon.isChecked():
@@ -270,13 +323,17 @@ class UI(QMainWindow):
                 particle_cloud.JustinArgon01.publish("Humidifier_Controller", "OFF")
     
     def displayMessageOnClicked(self):
+        global new_message
+        global lcd_message
         new_message = True
-        lcd_message = self.message
+        lcd_message = self.message.text()
+        self.status.setText("Waiting for guest response!")
         
     def capturePictureOnClicked(self):
         print("Taked")
     
     def openParcelOnClicked(self):
+        global openParcel
         openParcel = True
         self.status.setText("Parcel Box is Opened.")
         
@@ -288,18 +345,34 @@ ESConnection = ArgonConnection()
 ESConnectionThread = Thread(target=ESConnection.run)
 ESConnectionThread.start()
 
+Devices = ControlDevices()
+DevicesThread = Thread(target=Devices.run)
+DevicesThread.start()
+
+GuestScreen = lcd()
+GuestScreenThread = Thread(target=GuestScreen.run)
+GuestScreenThread.start()
+
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     window = UI()
     
     # Update data on window objects every 1 second
     def update():
+        global Temperature
+        global Humidity
+        global detected
+        global Guest
+        global GuestResponse
+        global AirCon_status
+        global Humidifier_status
+        
         window.tempDisplay.display(Temperature)
         window.humDisplay.display(Humidity)
         window.motionStatus.setText(str(detected))
         window.guestStatus.setText(Guest)
         window.guessReply.setText(GuestResponse)
-        window.airConStatus.setText(AirConditioner_status)
+        window.airConStatus.setText(AirCon_status)
         window.humidifierStatus.setText(Humidifier_status)
         particle_cloud.JustinArgon01.publish("Max_Temperature_Changed", str(window.maxTemp.value()))
         particle_cloud.JustinArgon01.publish("Min_Temperature_Changed", str(window.minTemp.value()))
@@ -309,3 +382,4 @@ if __name__ == '__main__':
     timer.start(1000)
 
     app.exec_()
+    
