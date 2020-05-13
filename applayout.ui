@@ -17,7 +17,7 @@
    </sizepolicy>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>JARVIS - Smart Home Assisstant</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QFrame" name="frame">
@@ -151,82 +151,10 @@
        <set>Qt::AlignCenter</set>
       </property>
      </widget>
-     <widget class="QLabel" name="label_20">
-      <property name="geometry">
-       <rect>
-        <x>60</x>
-        <y>220</y>
-        <width>50</width>
-        <height>30</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <family>Bahnschrift</family>
-        <pointsize>10</pointsize>
-        <weight>50</weight>
-        <bold>false</bold>
-       </font>
-      </property>
-      <property name="text">
-       <string>LIGHT</string>
-      </property>
-      <property name="scaledContents">
-       <bool>false</bool>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-      </property>
-     </widget>
-     <widget class="QWidget" name="layoutWidget_37">
-      <property name="geometry">
-       <rect>
-        <x>120</x>
-        <y>220</y>
-        <width>115</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <layout class="QHBoxLayout" name="lightOptionLayout_13">
-       <property name="spacing">
-        <number>10</number>
-       </property>
-       <item>
-        <widget class="QRadioButton" name="radioButtonRoomLightOn">
-         <property name="font">
-          <font>
-           <pointsize>10</pointsize>
-           <weight>50</weight>
-           <bold>false</bold>
-           <kerning>true</kerning>
-          </font>
-         </property>
-         <property name="text">
-          <string>ON</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QRadioButton" name="radioButtonRoomLightOff">
-         <property name="font">
-          <font>
-           <pointsize>10</pointsize>
-           <weight>50</weight>
-           <italic>false</italic>
-           <bold>false</bold>
-          </font>
-         </property>
-         <property name="text">
-          <string>OFF</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
      <widget class="QLabel" name="label_21">
       <property name="geometry">
        <rect>
-        <x>300</x>
+        <x>100</x>
         <y>220</y>
         <width>140</width>
         <height>30</height>
@@ -250,55 +178,10 @@
        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
       </property>
      </widget>
-     <widget class="QWidget" name="layoutWidget_38">
-      <property name="geometry">
-       <rect>
-        <x>440</x>
-        <y>220</y>
-        <width>125</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <layout class="QHBoxLayout" name="lightOptionLayout_14">
-       <property name="spacing">
-        <number>10</number>
-       </property>
-       <item>
-        <widget class="QRadioButton" name="radioButtonHeat">
-         <property name="font">
-          <font>
-           <pointsize>10</pointsize>
-           <weight>50</weight>
-           <bold>false</bold>
-           <kerning>true</kerning>
-          </font>
-         </property>
-         <property name="text">
-          <string>Heat</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QRadioButton" name="radioButtonCool">
-         <property name="font">
-          <font>
-           <pointsize>10</pointsize>
-           <weight>50</weight>
-           <italic>false</italic>
-           <bold>false</bold>
-          </font>
-         </property>
-         <property name="text">
-          <string>Cool</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
      <widget class="QLabel" name="label_22">
       <property name="geometry">
        <rect>
-        <x>630</x>
+        <x>510</x>
         <y>220</y>
         <width>100</width>
         <height>30</height>
@@ -325,7 +208,7 @@
      <widget class="QWidget" name="layoutWidget_39">
       <property name="geometry">
        <rect>
-        <x>730</x>
+        <x>610</x>
         <y>220</y>
         <width>115</width>
         <height>31</height>
@@ -408,7 +291,17 @@
         </widget>
        </item>
        <item row="0" column="1">
-        <widget class="QSpinBox" name="spinBoxMaxTemperature"/>
+        <widget class="QSpinBox" name="spinBoxMaxTemperature">
+         <property name="minimum">
+          <number>10</number>
+         </property>
+         <property name="maximum">
+          <number>40</number>
+         </property>
+         <property name="value">
+          <number>20</number>
+         </property>
+        </widget>
        </item>
        <item row="1" column="0">
         <widget class="QLabel" name="label_18">
@@ -428,7 +321,17 @@
         </widget>
        </item>
        <item row="1" column="1">
-        <widget class="QSpinBox" name="spinBoxMinTemperature"/>
+        <widget class="QSpinBox" name="spinBoxMinTemperature">
+         <property name="maximum">
+          <number>30</number>
+         </property>
+         <property name="value">
+          <number>10</number>
+         </property>
+         <property name="displayIntegerBase">
+          <number>10</number>
+         </property>
+        </widget>
        </item>
       </layout>
      </widget>
@@ -474,6 +377,9 @@
          <property name="segmentStyle">
           <enum>QLCDNumber::Flat</enum>
          </property>
+         <property name="value" stdset="0">
+          <double>5.500000000000000</double>
+         </property>
         </widget>
        </item>
        <item row="1" column="0">
@@ -515,7 +421,7 @@
           <enum>QLCDNumber::Flat</enum>
          </property>
          <property name="value" stdset="0">
-          <double>0.000000000000000</double>
+          <double>25.300000000000001</double>
          </property>
         </widget>
        </item>
@@ -569,7 +475,7 @@
           <enum>QFrame::StyledPanel</enum>
          </property>
          <property name="text">
-          <string>Heating</string>
+          <string>OFF</string>
          </property>
          <property name="scaledContents">
           <bool>false</bool>
@@ -629,6 +535,63 @@
        </item>
       </layout>
      </widget>
+     <widget class="QWidget" name="layoutWidget">
+      <property name="geometry">
+       <rect>
+        <x>241</x>
+        <y>223</y>
+        <width>190</width>
+        <height>27</height>
+       </rect>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout">
+       <item>
+        <widget class="QRadioButton" name="radioButtonACHeat">
+         <property name="font">
+          <font>
+           <pointsize>10</pointsize>
+           <weight>50</weight>
+           <bold>false</bold>
+           <kerning>true</kerning>
+          </font>
+         </property>
+         <property name="text">
+          <string>HEAT</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QRadioButton" name="radioButtonACCool">
+         <property name="font">
+          <font>
+           <pointsize>10</pointsize>
+           <weight>50</weight>
+           <italic>false</italic>
+           <bold>false</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>COOL</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QRadioButton" name="radioButtonACOff">
+         <property name="font">
+          <font>
+           <pointsize>10</pointsize>
+           <weight>50</weight>
+           <italic>false</italic>
+           <bold>false</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>OFF</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
     </widget>
     <widget class="QGroupBox" name="doorBox">
      <property name="geometry">
@@ -657,7 +620,7 @@
      <widget class="QLabel" name="label_7">
       <property name="geometry">
        <rect>
-        <x>40</x>
+        <x>60</x>
         <y>180</y>
         <width>50</width>
         <height>30</height>
@@ -708,7 +671,7 @@
      <widget class="QWidget" name="layoutWidget_43">
       <property name="geometry">
        <rect>
-        <x>100</x>
+        <x>120</x>
         <y>180</y>
         <width>115</width>
         <height>31</height>
@@ -753,7 +716,7 @@
      <widget class="QLabel" name="label_6">
       <property name="geometry">
        <rect>
-        <x>280</x>
+        <x>320</x>
         <y>180</y>
         <width>100</width>
         <height>30</height>
@@ -779,51 +742,7 @@
        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
       </property>
      </widget>
-     <widget class="QWidget" name="layoutWidget_44">
-      <property name="geometry">
-       <rect>
-        <x>390</x>
-        <y>180</y>
-        <width>151</width>
-        <height>31</height>
-       </rect>
-      </property>
-      <layout class="QHBoxLayout" name="receiverOptionLayout_4">
-       <item>
-        <widget class="QRadioButton" name="radioButtonParcelOpen">
-         <property name="font">
-          <font>
-           <pointsize>10</pointsize>
-           <weight>50</weight>
-           <bold>false</bold>
-          </font>
-         </property>
-         <property name="text">
-          <string>OPEN</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QRadioButton" name="radioButtonParcelClose">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="font">
-          <font>
-           <pointsize>10</pointsize>
-           <weight>50</weight>
-           <italic>false</italic>
-           <bold>false</bold>
-          </font>
-         </property>
-         <property name="text">
-          <string>CLOSE</string>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-     <widget class="QGraphicsView" name="cameraView_4">
+     <widget class="QGraphicsView" name="graphicsViewCamera">
       <property name="geometry">
        <rect>
         <x>570</x>
@@ -1194,18 +1113,28 @@
        </item>
       </layout>
      </widget>
+     <widget class="QPushButton" name="pushButtonOpenParcel">
+      <property name="geometry">
+       <rect>
+        <x>420</x>
+        <y>180</y>
+        <width>100</width>
+        <height>30</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+        <weight>50</weight>
+        <bold>false</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>OPEN</string>
+      </property>
+     </widget>
     </widget>
    </widget>
-  </widget>
-  <widget class="QMenuBar" name="menubar">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>1000</width>
-     <height>26</height>
-    </rect>
-   </property>
   </widget>
  </widget>
  <resources>
