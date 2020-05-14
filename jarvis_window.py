@@ -160,6 +160,7 @@ class ControlDevices:
                 detected = True
             else:
                 detected = False
+                Guest = "---"
             
             if IO.input(self.visitor_BUTTON_PIN) == False:
                 Guest = "Visitor"
@@ -330,16 +331,12 @@ class UI(QMainWindow):
         self.status.setText("Waiting for guest response!")
         
     def capturePictureOnClicked(self):
-        print("Taked")
+        print("Picture Taken!")
     
     def openParcelOnClicked(self):
         global openParcel
         openParcel = True
         self.status.setText("Parcel Box is Opened.")
-        
-    def cameraStreaming(self):
-        while self.__camera_streaming:
-            print("Hi")
 
 ESConnection = ArgonConnection()
 ESConnectionThread = Thread(target=ESConnection.run)
