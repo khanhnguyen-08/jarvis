@@ -253,8 +253,8 @@ class UI(QMainWindow):
         # Find buttons
         self.buttonSendMessage = self.findChild(QPushButton, 'pushButtonUserSendMessage')
         self.buttonSendMessage.clicked.connect(self.displayMessageOnClicked)    
-        self.buttonCapturePicture = self.findChild(QPushButton, 'pushButtonCapturePicture')
-        self.buttonCapturePicture.clicked.connect(self.capturePictureOnClicked)
+        self.buttonStart = self.findChild(QPushButton, 'pushButtonStart')
+        self.buttonStart.clicked.connect(self.StartOnClicked)
         self.buttonOpenParcel = self.findChild(QPushButton, 'pushButtonOpenParcel')
         self.buttonOpenParcel.clicked.connect(self.openParcelOnClicked)
         # Find message box
@@ -290,8 +290,6 @@ class UI(QMainWindow):
         self.rbHumidifierOn.toggled.connect(lambda:self.humidifierOnClicked(self.rbHumidifierOn))
         self.rbHumidifierOff.toggled.connect(lambda:self.humidifierOnClicked(self.rbHumidifierOff))
         
-        # Camera streaming
-        self.__camera_running = False
         # Show window
         self.show()
     
@@ -330,8 +328,8 @@ class UI(QMainWindow):
         lcd_message = self.message.text()
         self.status.setText("Waiting for guest response!")
         
-    def capturePictureOnClicked(self):
-        print("Picture Taken!")
+    def StartOnClicked(self):
+        print("Camera Started!")
     
     def openParcelOnClicked(self):
         global openParcel

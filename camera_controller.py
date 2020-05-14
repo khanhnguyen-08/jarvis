@@ -35,7 +35,7 @@ class camera:
 class UI(QMainWindow):
     def __init__(self):
         super(UI, self).__init__()
-        uic.loadUi("test_camera_button.ui", self)
+        uic.loadUi("Start_camera_button.ui", self)
         
         self.Start = self.findChild(QPushButton, 'pushButtonStart')
         self.Start.clicked.connect(self.StartOnClicked)
@@ -43,15 +43,9 @@ class UI(QMainWindow):
         self.show()
     
     def StartOnClicked(self):
-        camera = PiCamera()
-        camera.start_preview()
-        try:
-            sleep(1)
-            camera.capture('picture.jpg')
-            camera.stop_preview()
-        except:
-            print("Failed!")
-            camera.stop_preview()
+        doorCamera = camera()
+        CameraThread = Thread(target=doorCamera.run())
+        CameraThread.start()
     
 if __name__ == '__main__':
     app = QApplication(sys.argv)

@@ -752,7 +752,7 @@
        </rect>
       </property>
      </widget>
-     <widget class="QPushButton" name="pushButtonCapturePicture">
+     <widget class="QPushButton" name="pushButtonStart">
       <property name="geometry">
        <rect>
         <x>570</x>
@@ -767,7 +767,7 @@
        </font>
       </property>
       <property name="text">
-       <string>Capture Picture</string>
+       <string>Start Camera</string>
       </property>
      </widget>
      <widget class="QLabel" name="textboxDoorStatus">
