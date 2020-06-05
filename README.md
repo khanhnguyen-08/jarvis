@@ -1,4 +1,4 @@
-#SIT210 Embedded System Development - Final Project: Jarvis Smart Home Assistant
+# SIT210 Embedded System Development - Final Project: Jarvis Smart Home Assistant
 
 ## Introduction
 Jarvis, a smart home assistant, is a smart system that make your home more
